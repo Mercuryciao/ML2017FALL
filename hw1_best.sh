@@ -1,0 +1,1 @@
+python3 hw1_bestup.py $1 $2

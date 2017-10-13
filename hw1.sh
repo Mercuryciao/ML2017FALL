@@ -1,0 +1,1 @@
+python3 hw1up.py $1 $2

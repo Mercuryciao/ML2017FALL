@@ -86,6 +86,8 @@ def train(X_all, Y_all, save_dir):
         # Do validation and parameter saving
         if (epoch) % save_param_iter == 0:
             print('=====Saving Param at epoch %d=====' % epoch)
+            if not os.path.exists(save_dir):
+                os.mkdir(save_dir)
             np.savetxt(os.path.join(save_dir, 'w'), w)
             np.savetxt(os.path.join(save_dir, 'b'), [b,])
             print('epoch avg loss = %f' % (total_loss / (float(save_param_iter) * train_data_size)))

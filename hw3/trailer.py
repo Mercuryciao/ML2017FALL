@@ -8,6 +8,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D
 from keras.layers.normalization import BatchNormalization
 from keras.preprocessing.image import ImageDataGenerator
+from keras.callbacks import ModelCheckpoint, Callback, TensorBoard
 import csv
 output_file = 'seafood.csv'
 with open('./data/train.csv', 'r') as f:
@@ -35,24 +36,29 @@ Y_train, Y_valid = Y[:-3000], Y[-3000:]
 Y_train = np_utils.to_categorical(Y_train)
 Y_valid = np_utils.to_categorical(Y_valid)
 print(X.shape)
+batch_size = 128
+epochs = 100
+
 model = Sequential()
-model.add(Conv2D(filters=100, kernel_size=(3, 3), padding='same', input_shape=(48,48 , 1), activation='relu'))
+model.add(Conv2D(filters=32, kernel_size=(3, 3), padding='same', input_shape=(48,48 , 1), activation='relu'))
+model.add(Conv2D(filters=32, kernel_size=(3, 3), activation='relu'))
+model.add(Conv2D(filters=32, kernel_size=(3, 3), activation='relu'))
+
 #model.add(BatchNormalization())
 model.add(MaxPooling2D(pool_size=(2, 2),padding='same'))
+model.add(Dropout(0.1))
 
-model.add(Conv2D(filters=200, kernel_size=(3, 3), padding='same', activation='relu'))
+model.add(Conv2D(filters=64, kernel_size=(3, 3), padding='same', activation='relu'))
+model.add(Conv2D(filters=64, kernel_size=(3, 3), activation='relu'))
+model.add(Conv2D(filters=64, kernel_size=(3, 3), activation='relu'))
+
 #model.add(BatchNormalization())
 model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.35))
-
-model.add(Conv2D(filters=500, kernel_size=(3, 3), padding='same', activation='relu'))
-model.add(MaxPooling2D(pool_size=(2, 2),padding = 'same'))
-model.add(Dropout(0.45))
-
+model.add(Dropout(0.1))
 
 model.add(Flatten())
-model.add(Dense(300, activation='relu'))
-model.add(Dropout(0.5))
+model.add(Dense(512, activation='relu'))
+model.add(Dropout(0.1))
 model.add(Dense(7, activation='softmax'))
 
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -78,7 +84,7 @@ callbacks.append(ModelCheckpoint('ckpt/model-{epoch:05d}-{val_acc:.5f}.h5', moni
 
 model.fit_generator(
        datagen.flow(X_train, Y_train, batch_size=batch_size), 
-       steps_per_epoch=5*len(X_train)//batch_size,
+       steps_per_epoch=len(X_train)//batch_size,
        epochs=epochs,
        validation_data=(X_valid, Y_valid),
        callbacks=callbacks,

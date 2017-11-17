@@ -31,8 +31,8 @@ X = np.array(X).astype(float)/255
 X_test = np.array(X_test).astype(float)/255
 
 Y = np.array(Y).astype(int)
-X_train, X_valid = X[:-3000], X[-3000:]
-Y_train, Y_valid = Y[:-3000], Y[-3000:]
+X_train, X_valid = X[:-1500], X[-1500:]
+Y_train, Y_valid = Y[:-1500], Y[-1500:]
 Y_train = np_utils.to_categorical(Y_train)
 Y_valid = np_utils.to_categorical(Y_valid)
 print(X.shape)
@@ -53,19 +53,19 @@ model.add(BatchNormalization())
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.2))
 
-model.add(Conv2D(filters=128, kernel_size=(3, 3), padding='same', activation='relu'))
-model.add(Conv2D(filters=128, kernel_size=(3, 3), activation='relu'))
-
-#model.add(BatchNormalization())
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.2))
-
 model.add(Conv2D(filters=256, kernel_size=(3, 3), padding='same', activation='relu'))
 model.add(Conv2D(filters=256, kernel_size=(3, 3), activation='relu'))
 
 #model.add(BatchNormalization())
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.2))
+
+#model.add(Conv2D(filters=256, kernel_size=(3, 3), padding='same', activation='relu'))
+#model.add(Conv2D(filters=256, kernel_size=(3, 3), activation='relu'))
+
+#model.add(BatchNormalization())
+#model.add(MaxPooling2D(pool_size=(2, 2)))
+#model.add(Dropout(0.2))
 
 
 model.add(Flatten())
@@ -76,6 +76,9 @@ model.add(Dropout(0.3))
 model.add(Dense(7, activation='softmax'))
 
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+model_json = model.to_json()
+with open("model-3.json", "w") as json_file:
+    json_file.write(model_json)
 model.summary()
 
 #train_history=model.fit(x=X_train, y=Y_train, validation_data=(X_valid, Y_valid), epochs=30, batch_size=300, verbose=2)
@@ -83,8 +86,8 @@ datagen = ImageDataGenerator(
    rotation_range=10,
    width_shift_range=0.2,
    height_shift_range=0.2,
-   zoom_range=[0.8, 1.2],
-   shear_range=0.1,
+   #zoom_range=[0.8, 1.2],
+   #shear_range=0.1,
    horizontal_flip=True)
 
 datagen.fit(X_train)
@@ -92,7 +95,7 @@ callbacks = []
 callbacks.append(ModelCheckpoint('ckpt/model-{epoch:05d}-{val_acc:.5f}.h5', monitor='val_acc', save_best_only=True, period=1))
 
 
-model.fit_generator(
+train_history = model.fit_generator(
        datagen.flow(X_train, Y_train, batch_size=batch_size), 
        steps_per_epoch=len(X_train)//batch_size,
        epochs=epochs,
@@ -103,6 +106,12 @@ model.fit_generator(
 predictions = model.predict(X_test)
 predictions = np.argmax(predictions, axis=1)
 predictions = predictions.tolist()
+
+with open('returns.csv', 'w') as f:
+     writer = csv.writer(f)
+     for index in range(len(train_history.history['acc'])):
+         writer.writerow([train_history.history['acc'][index],train_history.history['val_acc'][index]])
+
 
 fieldnames = ['id','label']
 with open(output_file, 'w') as csvfile:

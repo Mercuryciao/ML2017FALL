@@ -36,45 +36,47 @@ Y_train, Y_valid = Y[:-3000], Y[-3000:]
 Y_train = np_utils.to_categorical(Y_train)
 Y_valid = np_utils.to_categorical(Y_valid)
 print(X.shape)
-batch_size = 128
+batch_size = 256
 epochs = 100
 
 model = Sequential()
 model.add(Conv2D(filters=32, kernel_size=(3, 3), padding='same', input_shape=(48,48 , 1), activation='relu'))
 model.add(Conv2D(filters=32, kernel_size=(3, 3), activation='relu'))
-model.add(Conv2D(filters=32, kernel_size=(3, 3), activation='relu'))
-
-#model.add(BatchNormalization())
+model.add(BatchNormalization())
 model.add(MaxPooling2D(pool_size=(2, 2),padding='same'))
 model.add(Dropout(0.1))
 
 model.add(Conv2D(filters=64, kernel_size=(3, 3), padding='same', activation='relu'))
 model.add(Conv2D(filters=64, kernel_size=(3, 3), activation='relu'))
-model.add(Conv2D(filters=64, kernel_size=(3, 3), activation='relu'))
+
+model.add(BatchNormalization())
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.2))
+
+model.add(Conv2D(filters=128, kernel_size=(3, 3), padding='same', activation='relu'))
+model.add(Conv2D(filters=128, kernel_size=(3, 3), activation='relu'))
 
 #model.add(BatchNormalization())
 model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.1))
+model.add(Dropout(0.2))
 
 model.add(Flatten())
 model.add(Dense(512, activation='relu'))
-model.add(Dropout(0.1))
+model.add(Dropout(0.3))
+model.add(Dense(512, activation='relu'))
+model.add(Dropout(0.3))
 model.add(Dense(7, activation='softmax'))
 
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 model.summary()
 
 #train_history=model.fit(x=X_train, y=Y_train, validation_data=(X_valid, Y_valid), epochs=30, batch_size=300, verbose=2)
-predictions = model.predict(X_test)
-predictions = np.argmax(predictions, axis=1)
-predictions = predictions.tolist()
-
 datagen = ImageDataGenerator(
-   rotation_range=30,
+   rotation_range=10,
    width_shift_range=0.2,
    height_shift_range=0.2,
    zoom_range=[0.8, 1.2],
-   shear_range=0.2,
+   shear_range=0.1,
    horizontal_flip=True)
 
 datagen.fit(X_train)
@@ -90,6 +92,9 @@ model.fit_generator(
        callbacks=callbacks,
        verbose = 1
        )
+predictions = model.predict(X_test)
+predictions = np.argmax(predictions, axis=1)
+predictions = predictions.tolist()
 
 fieldnames = ['id','label']
 with open(output_file, 'w') as csvfile:

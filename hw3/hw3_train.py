@@ -10,7 +10,7 @@ import csv
 import sys
 
 input_file = sys.argv[1]
-output_file = sys.argv[2]
+output_file = 'gg.csv'
 with open(input_file, 'r') as f:
     data = f.read().strip('\r\n').replace(',', ' ').split()[2:]
     data = np.array(data)
@@ -98,15 +98,3 @@ train_history = model.fit_generator(
 predictions = model.predict(X_test)
 predictions = np.argmax(predictions, axis=1)
 predictions = predictions.tolist()
-
-# with open('returns.csv', 'w') as f:
-#      writer = csv.writer(f)
-#      for index in range(len(train_history.history['acc'])):
-#          writer.writerow([train_history.history['acc'][index],train_history.history['val_acc'][index]])
-
-fieldnames = ['id','label']
-with open(output_file, 'w') as csvfile:
-    writer = csv.DictWriter(csvfile, fieldnames = fieldnames)
-    writer.writerow({'id': 'id', 'label': 'label'})
-    for index,each_ans in enumerate(predictions):
-        writer.writerow({'id': index, 'label': each_ans})

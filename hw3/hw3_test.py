@@ -11,6 +11,7 @@ from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D
 from keras.layers.normalization import BatchNormalization
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import ModelCheckpoint, Callback, TensorBoard
+from keras.models import load_model
 input_file = sys.argv[1]
 output_file = sys.argv[2]
 # seafood = pd.read_csv('seafood.csv', sep=',', header=0)

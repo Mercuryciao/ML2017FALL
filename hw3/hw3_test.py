@@ -20,16 +20,16 @@ output_file = sys.argv[2]
 # output = pd.read_csv('output.csv', sep=',', header=0)
 # voteanswer = pd.read_csv('voteanswer.csv', sep=',', header=0)
 
-cl_1 = load_model('model-1')
+cl_1 = load_model('model-1.5h')
 cl_1.compile(loss='binary_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
 predict = cl_1.predict(X)
 predict = np.argmax(predict, axis=1)
 voteanswer = predict
-cl_2 = load_model('model-2')
+cl_2 = load_model('model-2.5h')
 
 fieldnames = ['id','label']
 pre_2 = np.argmax(cl_2.predict(X),axis=1)
-cl_3 = load_model('model-3')
+cl_3 = load_model('model-3.5h')
 voteanswer = np.c_[voteanswer,pre_2]
 pre_3 = np.argmax(cl_3 .predict(X),axis=1)
 voteanswer = np.c_[voteanswer,pre_3]

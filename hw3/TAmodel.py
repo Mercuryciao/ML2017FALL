@@ -76,7 +76,7 @@ model.add(Dropout(0.5))
 model.add(Dense(7, activation='softmax'))
 opt = Adadelta(lr=0.1, rho=0.95, epsilon=1e-08)
 model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
-train_history=model.fit(x=X_train, y=Y_train, validation_data=(X_valid, Y_valid), epochs=30, batch_size=300, verbose=2)
+#train_history=model.fit(x=X_train, y=Y_train, validation_data=(X_valid, Y_valid), epochs=30, batch_size=300, verbose=2)
 model.summary()
 
 

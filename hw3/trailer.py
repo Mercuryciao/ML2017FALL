@@ -7,6 +7,7 @@ from keras.utils import np_utils
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D
 from keras.layers.normalization import BatchNormalization
+from keras.preprocessing.image import ImageDataGenerator
 import csv
 output_file = 'seafood.csv'
 with open('./data/train.csv', 'r') as f:
@@ -53,12 +54,37 @@ model.add(Flatten())
 model.add(Dense(300, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(7, activation='softmax'))
-model.summary()
+
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-train_history=model.fit(x=X_train, y=Y_train, validation_data=(X_valid, Y_valid), epochs=30, batch_size=300, verbose=2)
+model.summary()
+
+#train_history=model.fit(x=X_train, y=Y_train, validation_data=(X_valid, Y_valid), epochs=30, batch_size=300, verbose=2)
 predictions = model.predict(X_test)
 predictions = np.argmax(predictions, axis=1)
 predictions = predictions.tolist()
+
+datagen = ImageDataGenerator(
+   rotation_range=30,
+   width_shift_range=0.2,
+   height_shift_range=0.2,
+   zoom_range=[0.8, 1.2],
+   shear_range=0.2,
+   horizontal_flip=True)
+
+datagen.fit(X_train)
+callbacks = []
+callbacks.append(ModelCheckpoint('ckpt/model-{epoch:05d}-{val_acc:.5f}.h5', monitor='val_acc', save_best_only=True, period=1))
+
+
+model.fit_generator(
+       datagen.flow(X_train, Y_train, batch_size=batch_size), 
+       steps_per_epoch=5*len(X_train)//batch_size,
+       epochs=epochs,
+       validation_data=(X_valid, Y_valid),
+       callbacks=callbacks,
+       verbose = 1
+       )
+
 fieldnames = ['id','label']
 with open(output_file, 'w') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames = fieldnames)

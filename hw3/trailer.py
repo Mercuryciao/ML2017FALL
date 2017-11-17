@@ -9,7 +9,7 @@ from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D
 from keras.layers.normalization import BatchNormalization
 import csv
 output_file = 'seafood.csv'
-with open('train.csv', 'r') as f:
+with open('./data/train.csv', 'r') as f:
     data = f.read().strip('\r\n').replace(',', ' ').split()[2:]
     data = np.array(data)
     Y = []
@@ -18,7 +18,7 @@ with open('train.csv', 'r') as f:
         Y.append(data[y])
         X.append(data[y+1:y+48*48+1].reshape(48,48,1))
     #X = np.delete(data
-with open('test.csv', 'r') as f:
+with open('./data/test.csv', 'r') as f:
     data = f.read().strip('\r\n').replace(',', ' ').split()[2:]
     data = np.array(data)
     Y_test = []

@@ -7,9 +7,11 @@ from keras.layers.normalization import BatchNormalization
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import ModelCheckpoint, Callback, TensorBoard
 import csv
+import sys
 
-output_file = 'seafood.csv'
-with open('./data/train.csv', 'r') as f:
+input_file = sys.argv[1]
+output_file = 'gg.csv'
+with open(input_file, 'r') as f:
     data = f.read().strip('\r\n').replace(',', ' ').split()[2:]
     data = np.array(data)
     Y = []
@@ -17,23 +19,27 @@ with open('./data/train.csv', 'r') as f:
     for y in range(0,len(data),48*48+1):
         Y.append(data[y])
         X.append(data[y+1:y+48*48+1].reshape(48,48,1))
-    #X = np.delete(data
-with open('./data/test.csv', 'r') as f:
-    data = f.read().strip('\r\n').replace(',', ' ').split()[2:]
-    data = np.array(data)
-    Y_test = []
-    X_test = []
-    for y in range(0,len(data),48*48+1):   
-        X_test.append(data[y+1:y+48*48+1].reshape(48,48,1)) 
-X = np.array(X).astype(float)/255
-X_test = np.array(X_test).astype(float)/255
 
+
+
+
+# with open('./data/test.csv', 'r') as f:
+#     data = f.read().strip('\r\n').replace(',', ' ').split()[2:]
+#     data = np.array(data)
+#     Y_test = []
+#     X_test = []
+#     for y in range(0,len(data),48*48+1):   
+#         X_test.append(data[y+1:y+48*48+1].reshape(48,48,1)) 
+# X = np.array(X).astype(float)/255
+# X_test = np.array(X_test).astype(float)/255
+
+X = np.array(X).astype(float)/255
 Y = np.array(Y).astype(int)
 X_train, X_valid = X[:-1500], X[-1500:]
 Y_train, Y_valid = Y[:-1500], Y[-1500:]
 Y_train = np_utils.to_categorical(Y_train)
 Y_valid = np_utils.to_categorical(Y_valid)
-print(X.shape)
+
 batch_size = 256
 epochs = 100
 
@@ -65,9 +71,9 @@ model.add(Dropout(0.3))
 model.add(Dense(7, activation='softmax'))
 
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-model_json = model.to_json()
-with open("model-3.json", "w") as json_file:
-    json_file.write(model_json)
+# model_json = model.to_json()
+# with open("model-3.json", "w") as json_file:
+#     json_file.write(model_json)
 model.summary()
 
 datagen = ImageDataGenerator(
@@ -92,15 +98,3 @@ train_history = model.fit_generator(
 predictions = model.predict(X_test)
 predictions = np.argmax(predictions, axis=1)
 predictions = predictions.tolist()
-
-with open('returns.csv', 'w') as f:
-     writer = csv.writer(f)
-     for index in range(len(train_history.history['acc'])):
-         writer.writerow([train_history.history['acc'][index],train_history.history['val_acc'][index]])
-
-fieldnames = ['id','label']
-with open(output_file, 'w') as csvfile:
-    writer = csv.DictWriter(csvfile, fieldnames = fieldnames)
-    writer.writerow({'id': 'id', 'label': 'label'})
-    for index,each_ans in enumerate(predictions):
-        writer.writerow({'id': index, 'label': each_ans})

@@ -84,7 +84,7 @@ datagen = ImageDataGenerator(
 
 datagen.fit(X_train)
 callbacks = []
-callbacks.append(ModelCheckpoint('ckpt/model-{epoch:05d}-{val_acc:.5f}.h5', monitor='val_acc', save_best_only=True, period=1))
+callbacks.append(ModelCheckpoint('model-{epoch:05d}-{val_acc:.5f}.h5', monitor='val_acc', save_best_only=True, period=1))
 
 
 train_history = model.fit_generator(

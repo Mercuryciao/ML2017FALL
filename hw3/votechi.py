@@ -6,7 +6,7 @@ from math import log, floor
 import pandas as pd
 import csv as CSV_LIB
 
-output_file = 'fuckyou.csv'
+output_file = 'vote_result.csv'
 # seafood = pd.read_csv('seafood.csv', sep=',', header=0)
 # okok1 = pd.read_csv('okok1.csv', sep=',', header=0)
 # ZZ = pd.read_csv('ZZ.csv', sep=',', header=0)

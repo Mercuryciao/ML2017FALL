@@ -30,7 +30,7 @@ text.close()
 
 x = []
 y = []
-lamda=0.01
+lamda = 0.01
 #train_x=[]
 #train_x[w]=x.extend(data[lista[w]][j+(480*i):j+(480*i)+9])
 #lista=[3,6,7,8,9]
@@ -67,30 +67,30 @@ for i in range(repeat):
     w = w - l_rate * gra/ada
 #    print ('iteration: %d | Cost: %f  ' % ( i,cost_a))
 
-w = np.matmul(np.matmul(inv(np.matmul(x.transpose(),x)),x.transpose()),y)
+w = np.matmul(np.matmul(inv(np.matmul(x.transpose(),x)), x.transpose()), y)
 
-test = pd.read_csv('C:/Users/Vicky/Desktop/ML/hw1/test.csv',header=None)
+test = pd.read_csv('C:/Users/Vicky/Desktop/ML/hw1/test.csv',header = None)
 
 test = test[test.iloc[:,1]=='PM2.5']
-name=test[0]
+name = test[0]
 test = test.iloc[0:,2:]
 test = test.astype(float)
 test = np.array(test)
-test = np.concatenate((test,test**2), axis=1)
-row=np.ones(240)
-test=np.c_[row,test]
+test = np.concatenate((test, test**2), axis=1)
+row = np.ones(240)
+test = np.c_[row, test]
 test = test.astype(float)
 
-result=np.dot(test,w)
+result = np.dot(test, w)
 result_t = result.transpose()
-aa=np.c_[name,result_t]
+np_data = np.c_[name, result_t]
 
 filename = "C:/Users/Vicky/Desktop/ML/hw1/predict9.csv"
 text = open(filename, "w+")
-s = csv.writer(text,delimiter=',')
+s = csv.writer(text,delimiter = ',')
 s.writerow(["id","value"])
-for i in range(len(aa)):
-    s.writerow(aa[i]) 
+for i in range(len(np_data)):
+    s.writerow(np_data[i]) 
 text.close()
 
 ##作圖
